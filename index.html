@@ -4,16 +4,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Core Evolutivo  - Analizador de Cruce</title>
-    <!-- Fuentes tipográficas -->
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-    <!-- Vinculación del archivo CSS externo -->
     <link rel="stylesheet" href="css/estilo.css">
 </head>
 <body>
 
 <div class="system-container">
     
-    <!-- Cabezal del Sistema -->
     <header class="system-header">
         <div class="sys-title">
             <h1>Core Evolutivo</h1>
@@ -22,13 +19,11 @@
         <div class="sys-badge">Módulo de Cómputo Local</div>
     </header>
 
-    <!-- Consola de Errores -->
     <div id="error-box" class="alert-console">
         <strong>[Alerta del Sistema] Error de Validación:</strong>
         <ul id="error-list"></ul>
     </div>
 
-    <!-- Panel Superior de Entrada de Parámetros -->
     <section class="control-deck">
         <h2 class="deck-title">Configuración de Hebras Genéticas</h2>
         
@@ -74,10 +69,8 @@
         </form>
     </section>
 
-    <!-- Bloque Inferior de Salida de Datos -->
     <section id="results-panel" class="telemetry-output">
         
-        <!-- Cápsula Hijo 1 -->
         <article class="specimen-capsule">
             <div class="capsule-meta">
                 <span>Especimen F1-A</span>
@@ -91,7 +84,6 @@
             <div id="res-math1" class="math-log"></div>
         </article>
 
-        <!-- Cápsula Hijo 2 -->
         <article class="specimen-capsule alt-variant">
             <div class="capsule-meta">
                 <span>Especimen F1-B</span>
@@ -110,7 +102,7 @@
 </div>
 
 <footer>
-   © 2026 Estación de Pruebas de Algoritmos Genéticos. Todos los derechos reservados. 
+   &copy; 2026 Estación de Pruebas de Algoritmos Genéticos. Todos los derechos reservados. 
 </footer>
 
 <script>
@@ -296,13 +288,33 @@
         const fit1 = calcularFitnessEvolutivo(child1);
         const fit2 = calcularFitnessEvolutivo(child2);
 
+        // Determinación del Fitness Óptimo Máximo Teórico Global
+        const valorMaximoDecimal = (1 << lenPadreVal) - 1;
+        const fitnessOptimoMaximo = Math.pow(valorMaximoDecimal, 2);
+
+        // Inyección de mensajes de estatus evolutivo e identificación del espécimen óptimo
+        let mensajeHijo1 = "";
+        let mensajeHijo2 = "";
+
+        if (fit1.fitness_cuadrado > fit2.fitness_cuadrado) {
+            mensajeHijo1 = `<div style="margin-top:12px; padding-top:8px; border-top:1px dashed rgba(255,255,255,0.15); color: #10b981;"><strong>✨ Sucesor Dominante:</strong> Posee el rendimiento máximo de la generación.<br><span style="font-size:0.8rem; color:var(--text-light);">Límite óptimo del ecosistema: ${fitnessOptimoMaximo}</span></div>`;
+            mensajeHijo2 = `<div style="margin-top:12px; padding-top:8px; border-top:1px dashed rgba(255,255,255,0.15); font-size:0.8rem; color:var(--text-light);">Límite óptimo del ecosistema: ${fitnessOptimoMaximo}</div>`;
+        } else if (fit2.fitness_cuadrado > fit1.fitness_cuadrado) {
+            mensajeHijo1 = `<div style="margin-top:12px; padding-top:8px; border-top:1px dashed rgba(255,255,255,0.15); font-size:0.8rem; color:var(--text-light);">Límite óptimo del ecosistema: ${fitnessOptimoMaximo}</div>`;
+            mensajeHijo2 = `<div style="margin-top:12px; padding-top:8px; border-top:1px dashed rgba(255,255,255,0.15); color: #10b981;"><strong>✨ Sucesor Dominante:</strong> Posee el rendimiento máximo de la generación.<br><span style="font-size:0.8rem; color:var(--text-light);">Límite óptimo del ecosistema: ${fitnessOptimoMaximo}</span></div>`;
+        } else {
+            const msgEmpate = `<div style="margin-top:12px; padding-top:8px; border-top:1px dashed rgba(255,255,255,0.15); color: #3b82f6;"><strong>🤝 Convergencia Simétrica:</strong> Ambos hijos expresan la misma aptitud.<br><span style="font-size:0.8rem; color:var(--text-light);">Límite óptimo del ecosistema: ${fitnessOptimoMaximo}</span></div>`;
+            mensajeHijo1 = msgEmpate;
+            mensajeHijo2 = msgEmpate;
+        }
+
         document.getElementById('res-bin1').innerHTML = formatearCadenaCorte(child1, cut);
         document.getElementById('res-fit1').textContent = fit1.fitness_cuadrado;
-        document.getElementById('res-math1').innerHTML = fit1.proceso;
+        document.getElementById('res-math1').innerHTML = fit1.proceso + mensajeHijo1;
 
         document.getElementById('res-bin2').innerHTML = formatearCadenaCorte(child2, cut);
         document.getElementById('res-fit2').textContent = fit2.fitness_cuadrado;
-        document.getElementById('res-math2').innerHTML = fit2.proceso;
+        document.getElementById('res-math2').innerHTML = fit2.proceso + mensajeHijo2;
 
         resultsPanel.style.display = 'grid';
         resultsPanel.scrollIntoView({ behavior: 'smooth' });
